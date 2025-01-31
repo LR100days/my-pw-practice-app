@@ -76,6 +76,9 @@ test ('Assertions', async ({page}) => {
     const value = 5;
     expect(value).toEqual(5);
 
+    const text = await basicFormButton.textContent();
+    expect(text).toEqual('Submit');
+
     //Locator assertions
     await expect(basicFormButton).toHaveText('Submit');
 
