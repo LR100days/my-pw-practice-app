@@ -37,7 +37,7 @@ test ('Locating parent elements', async ({page}) => {
 })
 
 test ('Reusing locators', async ({page}) => {
-    const basicForm = await page.locator('nb-card').filter({hasText: "Basic form"});
+    const basicForm = page.locator('nb-card').filter({hasText: "Basic form"});
     const emailField = basicForm.getByRole('textbox', {name: "Email"});
 
     await emailField.fill('test@test.com');
@@ -46,4 +46,43 @@ test ('Reusing locators', async ({page}) => {
     await basicForm.getByRole('button').click();
     
     await expect(emailField).toHaveValue('test@test.com')
+})
+
+test ('Extracting values', async ({page}) => {
+    //single text value
+    const basicForm = page.locator('nb-card').filter({hasText: "Basic form"});
+    const buttonText = await basicForm.locator('button').textContent();
+    expect(buttonText).toEqual('Submit');
+
+    //all text values
+    const allRadioButtonsLabels = await page.locator('nb-radio').allTextContents();
+    expect(allRadioButtonsLabels).toContain("Option 1");
+
+    // input field
+    const emailField = basicForm.getByRole('textbox', {name: "Email"});
+    await emailField.fill('test@test.com');
+    const emailValue = await emailField.inputValue();
+    expect(emailValue).toEqual('test@test.com');
+
+    // to get value from attribute of the web page
+    const placeholderValue = await emailField.getAttribute('placeholder');
+    expect(placeholderValue).toEqual('Email');
+})
+
+test ('Assertions', async ({page}) => {
+    const basicFormButton = page.locator('nb-card').filter({hasText: "Basic form"}).locator('button');
+    
+    //General assertions
+    const value = 5;
+    expect(value).toEqual(5);
+
+    const text = await basicFormButton.textContent();
+    expect(text).toEqual('Submit');
+
+    //Locator assertions
+    await expect(basicFormButton).toHaveText('Submit');
+
+    //Soft assertions
+    //await expect.soft(basicFormButton).toHaveText('Submit5');
+    //await basicFormButton.click()
 })
